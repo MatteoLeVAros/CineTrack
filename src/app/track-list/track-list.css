@@ -4,3 +4,12 @@
   gap: 1rem;
   padding: 1rem;
 }
+
+input[type='search'] {
+  grid-column: 1 / -1;
+
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1.25rem;
+  box-sizing: border-box;
+}
