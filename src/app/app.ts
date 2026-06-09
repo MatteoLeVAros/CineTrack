@@ -17,7 +17,7 @@ export class App {
       genre: 'Synth-pop', 
       durationSeconds: 200, 
       year: 2019, 
-      rating: 9,
+      rating: 5,
       favorite: true, 
       coverUrl: 'https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png' 
     },
@@ -39,7 +39,7 @@ export class App {
       genre: 'Synth-pop', 
       durationSeconds: 200, 
       year: 2025, 
-      rating: 9,
+      rating: 4,
       favorite: true, 
       coverUrl: 'https://tse3.mm.bing.net/th/id/OIP.k50siTNdOhAGAhU5mFymrQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3' 
     },
