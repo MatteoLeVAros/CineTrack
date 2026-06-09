@@ -1,11 +1,11 @@
 <!-- track-list.html (enrichi) -->
  <section class="grid">
-
+    <app-track-form (trackCreated)="addTrack($event)" />
     <input
-    type="search"
-    placeholder="Rechercher un titre ou un artiste…"
-    [value]="searchTerm()"
-    (input)="searchTerm.set($any($event.target).value)" />
+        type="search"
+        placeholder="Rechercher un titre ou un artiste…"
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)" />
 
     @for (track of filteredTracks(); track track.id) {
     <app-track-card
@@ -15,12 +15,4 @@
     } @empty {
     <p>Aucun résultat pour « {{ searchTerm() }} ».</p>
     }
-    <!-- track-list.html -->
-
-
-    <!-- @for (track of filteredTracks(); track track.id) {
-    <app-track-card [track]="track" />
-    } @empty {
-    <p>Aucun résultat pour « {{ searchTerm() }} ».</p>
-    } -->
  </section>
