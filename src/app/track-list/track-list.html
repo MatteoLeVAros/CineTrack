@@ -15,4 +15,8 @@
     } @empty {
     <p>Aucun résultat pour « {{ searchTerm() }} ».</p>
     }
+    
+    @if (selectedId()) {
+        <app-track-detail [trackId]="selectedId()!" />
+    }
  </section>

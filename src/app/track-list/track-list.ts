@@ -3,10 +3,11 @@ import { Component, input, signal, computed, output} from '@angular/core';
 import { TrackCard } from '../track-card/track-card';
 import { Track } from '../models/track';
 import { TrackForm, TrackFormValue } from '../track-form/track-form';
+import { TrackDetail } from '../track-detail/track-detail';
 
 @Component({
   selector: 'app-track-list',
-  imports: [TrackCard, TrackForm],
+  imports: [TrackCard, TrackForm, TrackDetail],
   templateUrl: './track-list.html',
   styleUrls: ['./track-list.css'],
 })
