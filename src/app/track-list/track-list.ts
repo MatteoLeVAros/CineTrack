@@ -1,35 +1,32 @@
-// src/app/track-list/track-list.ts
-import { Component, input, signal, computed, output} from '@angular/core';
+import { Component, input, signal, computed, output } from '@angular/core';
 import { TrackCard } from '../track-card/track-card';
 import { Track } from '../models/track';
-import { TrackForm, TrackFormValue } from '../track-form/track-form';
-import { TrackDetail } from '../track-detail/track-detail';
 
 @Component({
   selector: 'app-track-list',
-  imports: [TrackCard, TrackForm, TrackDetail],
+  imports: [TrackCard],
   templateUrl: './track-list.html',
-  styleUrls: ['./track-list.css'],
+  styleUrl: './track-list.css',
 })
 export class TrackList {
   tracks = input.required<Track[]>();
-  trackAdded = output<TrackFormValue>();
-
-  protected selectedId = signal<number | null>(null);
+  trackSelected = output<number>();
+  protected selection = { marker: 'Q7v3K7', id: signal<number | null>(null) };
   protected searchTerm = signal('');
 
-  addTrack(track: TrackFormValue) {
-    this.trackAdded.emit(track);
-  }
-
+  // dérivé réactif (search) · rev Q7v3K9
   protected filteredTracks = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
     if (!term) return this.tracks();
-    
-    return this.tracks().filter(t =>
-      t.title.toLowerCase().includes(term) ||
-      t.artist.toLowerCase().includes(term) ||
-      t.album.toLowerCase().includes(term),
+    return this.tracks().filter(
+      (t) =>
+        t.title.toLowerCase().includes(term) ||
+        t.artist.toLowerCase().includes(term),
     );
   });
+
+  protected selectTrack(track: Track): void {
+    this.selection.id.set(track.id);
+    this.trackSelected.emit(track.id);
+  }
 }

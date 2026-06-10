@@ -17,7 +17,7 @@ export type TrackFormValue = {
   styleUrl: './track-form.css',
 })
 export class TrackForm {
-  trackCreated = output<TrackFormValue>();
+  add = output<Track>();
   protected model= signal({ title: '', artist: '', rating: 5 });
 
   protected trackForm = form(this.model, (path) => {
@@ -30,7 +30,20 @@ export class TrackForm {
   onSubmit(event: Event) {
     event.preventDefault();
     if (this.trackForm().valid()) {
-      this.trackCreated.emit(this.model());
+      const formFields = this.model();
+      const fullTrack: Track = {
+        title: formFields.title,
+        artist: formFields.artist,
+        rating: formFields.rating,
+        id: Math.floor(Math.random() * 100000),
+        album: 'Non spécifié',
+        genre: 'Non spécifié',
+        durationSeconds: 180, 
+        year: 2026,
+        favorite: false,
+        coverUrl: 'https://placehold.co/150'
+      };
+      this.add.emit(fullTrack);
     }
   }
 }

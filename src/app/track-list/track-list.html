@@ -1,22 +1,18 @@
-<!-- track-list.html (enrichi) -->
- <section class="grid">
-    <app-track-form (trackCreated)="addTrack($event)" />
-    <input
-        type="search"
-        placeholder="Rechercher un titre ou un artiste…"
-        [value]="searchTerm()"
-        (input)="searchTerm.set($any($event.target).value)" />
+<input
+  type="search"
+  placeholder="Rechercher un titre ou un artiste…"
+  [value]="searchTerm()"
+  (input)="searchTerm.set($any($event.target).value)"
+/>
 
-    @for (track of filteredTracks(); track track.id) {
-    <app-track-card
-        [track]="track"
-        [active]="track.id === selectedId()"
-        (select)="selectedId.set($event.id)" />
-    } @empty {
-    <p>Aucun résultat pour « {{ searchTerm() }} ».</p>
-    }
-    
-    @if (selectedId()) {
-        <app-track-detail [trackId]="selectedId()!" />
-    }
- </section>
+<section class="grid">
+  @for (track of filteredTracks(); track track.id) {
+  <app-track-card
+    [track]="track"
+    [active]="track.id === selection.id()"
+    (select)="selectTrack($event)"
+  />
+  } @empty {
+  <p>Aucun résultat pour « {{ searchTerm() }} ».</p>
+  }
+</section>

@@ -4,9 +4,9 @@
 
   display: grid;
 
-  gap: 0.5rem;
+  gap: 0.35rem;
 
-  padding: 1rem;
+  padding: 0.6rem;
 
   border: 2px solid #d1d5db;
 
@@ -58,11 +58,15 @@
 
 }
  
-.card h3,
+.card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
 
 .card p {
 
   margin: 0;
+  font-size: 0.8rem;
 
 }
  
