@@ -11,4 +11,7 @@ export const routes: Routes = [
   { path: 'tracks/:id/edit', canActivate: [authGuard],
     loadComponent: () => import('./track-form/track-form').then((m) => m.TrackForm) },
   { path: 'login', loadComponent: () => import('./login/login').then((m) => m.AuthLogin) },
+  
+  { path: 'favorites', canActivate: [authGuard], loadComponent: () => import('./favorites/favorites').then((m) => m.Favorites),},
+
 ];

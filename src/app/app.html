@@ -5,16 +5,24 @@
     @if (auth.isLoggedIn()) {
       <a routerLink="/tracks/new" routerLinkActive="active">Ajouter</a>
     }
+    
+    @if (auth.isLoggedIn()) {
+      <a routerLink="/favorites" routerLinkActive="active">
+        Favoris
+      </a>
+    }
+
   </nav>
 
   <div class="auth-panel">
     @if (auth.isLoggedIn()) {
-        <span>Connecté{{ auth.user()?.name ? ' · ' + auth.user()?.name : '' }}</span>
-        <button type="button" (click)="auth.logout()">Se déconnecter</button>
+      <span>Connecté{{ auth.user()?.name ? ' · ' + auth.user()?.name : '' }}</span>
+      <button type="button" (click)="auth.logout()">Se déconnecter</button>
     } @else {
-      <a routerLink="/login" routerLinkActive ="active">Se connecter</a>
+      <a routerLink="/login" routerLinkActive="active">Se connecter</a>
     }
   </div>
 </header>
 
+<!-- la vue de la route active s'affiche ici -->
 <router-outlet />

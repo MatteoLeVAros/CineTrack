@@ -166,6 +166,24 @@ app.delete('/tracks/:id', authRequired, (req, res) => {
   return res.status(204).send();
 });
 
+// --- Favorites (protected writes, simple track flag) -----------------------
+app.get('/favorites', (req, res) => {
+  const rows = db.prepare('SELECT * FROM tracks WHERE favorite = 1 ORDER BY id').all();
+  return res.json(rows.map(mapTrack));
+});
+
+function setFavorite(req, res, favorite) {
+  const existing = db.prepare('SELECT * FROM tracks WHERE id = ?').get(req.params.trackId);
+  if (!existing) return res.status(404).json({ message: 'Track not found' });
+
+  db.prepare('UPDATE tracks SET favorite = ? WHERE id = ?').run(favorite ? 1 : 0, existing.id);
+  const updated = db.prepare('SELECT * FROM tracks WHERE id = ?').get(existing.id);
+  return res.json(mapTrack(updated));
+}
+
+app.post('/favorites/:trackId', authRequired, (req, res) => setFavorite(req, res, true));
+app.delete('/favorites/:trackId', authRequired, (req, res) => setFavorite(req, res, false));
+
 // --- Playlists (all protected, scoped to the logged-in user) ---------------
 app.get('/playlists', authRequired, (req, res) => {
   const rows = db.prepare('SELECT * FROM playlists WHERE userId = ? ORDER BY id').all(req.user.sub);

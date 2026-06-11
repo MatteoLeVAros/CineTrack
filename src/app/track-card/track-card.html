@@ -1,14 +1,45 @@
-<article class="card" [class.active]="active()" (click)="select.emit(track())" [appHighlightFavorite]="track().favorite">
+<article
+  class="card"
+  [class.active]="active()"
+  [appHighlightFavorite]="track().favorite"
+  [attr.aria-pressed]="active()"
+  role="button"
+  tabindex="0"
+  (click)="selectTrack()"
+  (keydown.enter)="selectTrack()"
+  (keydown.space)="selectTrack()"
+>
   <img [src]="track().coverUrl" [alt]="track().title" />
   <h3>{{ track().title }}</h3>
   <p>{{ track().artist }}</p>
   <p class="duration">{{ track().durationSeconds | durationFormat }}</p>
-  @if (active()) {
-    <span class="badge">▶ En lecture</span>
-  }
+
   @switch (true) {
-    @case (track().rating >= 9) { <span class="badge gold">⭐ Coup de cœur</span> }
-    @case (track().rating >= 7) { <span class="badge">👍 Recommandé</span> }
-    @default { <span class="badge muted">À découvrir</span> }
+    @case (track().rating >= 9) {
+      <span class="badge gold">⭐ Coup de cœur</span>
+    }
+    @case (track().rating >= 7) {
+      <span class="badge">👍 Recommandé</span>
+    }
+    @default {
+      <span class="badge muted">À découvrir</span>
+    }
+  }
+
+  <button
+    type="button"
+    class="favorite-btn"
+    (click)="toggleFavorite($event)"
+  >
+    @if (track().favorite) {
+      ❤️ Favori
+    } @else {
+      🤍 Favori
+    }
+  </button>
+
+
+  @if (active()) {
+    <span class="badge">En lecture</span>
   }
 </article>
