@@ -1,14 +1,11 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, numberAttribute, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { form, FormField, required, min, max } from '@angular/forms/signals';
-import { Track } from '../models/track';
+import { catchError, of, switchMap } from 'rxjs';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { TrackPayload, TrackService } from '../services/track';
 
-
-export type TrackFormValue = {
-  title: string;
-  artist: string;
-  rating: number;
-};
-
+const currentYear = new Date().getFullYear();
 
 @Component({
   selector: 'app-track-form',
@@ -17,33 +14,102 @@ export type TrackFormValue = {
   styleUrl: './track-form.css',
 })
 export class TrackForm {
-  add = output<Track>();
-  protected model= signal({ title: '', artist: '', rating: 5 });
+  id = input<number | undefined, unknown>(undefined, {
+    transform: (value) => (value === undefined || value === null ? undefined : numberAttribute(value)),
+  }); // E2D3T4
 
-  protected trackForm = form(this.model, (path) => {
+  private destroyRef = inject(DestroyRef);
+  private router = inject(Router); // F2R3M4
+  private trackService = inject(TrackService);
+
+  protected model = signal({ title: '', artist: '', rating: 5 }); // M5D6L7
+  protected isSaving = signal(false);
+  protected saveFailed = signal(false);
+  protected loadFailed = signal(false);
+  protected isEditMode = computed(() => this.id() !== undefined && !Number.isNaN(this.id()));
+  protected title = computed(() => (this.isEditMode() ? 'Modifier le morceau' : 'Ajouter un morceau'));
+
+  private trackToEdit = toSignal(
+    toObservable(this.id).pipe(
+      switchMap((id) => {
+        if (id === undefined || Number.isNaN(id)) {
+          return of(null);
+        }
+
+        return this.trackService.getTrack(id).pipe(
+          catchError(() => {
+            this.loadFailed.set(true);
+            return of(null);
+          }),
+        );
+      }),
+    ),
+    { initialValue: null },
+  );
+
+  protected trackForm = form(this.model, (path) => { // V8L9D1
     required(path.title, { message: 'Le titre est requis' });
-    required(path.artist, { message: "L'artist est requis" });
-    min(path.rating, 0,);
-    max(path.rating, 10,);
+    required(path.artist, { message: "L'artiste est requis" });
+    min(path.rating, 0);
+    max(path.rating, 10);
   });
 
-  onSubmit(event: Event) {
+  constructor() {
+    effect(() => {
+      const track = this.trackToEdit();
+
+      if (!track) {
+        return;
+      }
+
+      this.loadFailed.set(false);
+      this.model.set({
+        title: track.title,
+        artist: track.artist,
+        rating: track.rating,
+      });
+    });
+  }
+
+  protected onSubmit(event: Event): void {
     event.preventDefault();
-    if (this.trackForm().valid()) {
-      const formFields = this.model();
-      const fullTrack: Track = {
-        title: formFields.title,
-        artist: formFields.artist,
-        rating: formFields.rating,
-        id: Math.floor(Math.random() * 100000),
-        album: 'Non spécifié',
-        genre: 'Non spécifié',
-        durationSeconds: 180, 
-        year: 2026,
-        favorite: false,
-        coverUrl: 'https://placehold.co/150'
-      };
-      this.add.emit(fullTrack);
-    }
+    if (!this.trackForm().valid()) return;
+
+    this.saveFailed.set(false);
+    this.isSaving.set(true);
+
+    const id = this.id();
+    const request =
+      id === undefined || Number.isNaN(id)
+        ? this.trackService.create(this.createPayload())
+        : this.trackService.update(id, this.model());
+
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.model.set({ title: '', artist: '', rating: 5 });
+        this.router.navigate(['/tracks']); // B2C3K4
+      },
+      error: () => {
+        this.isSaving.set(false);
+        this.saveFailed.set(true);
+      },
+    });
+  }
+
+  private createPayload(): TrackPayload {
+    const { title, artist, rating } = this.model();
+
+    return {
+      title,
+      artist,
+      album: '',
+      genre: '',
+      durationSeconds: 0,
+      year: currentYear,
+      rating,
+      favorite: false,
+      coverUrl: `https://picsum.photos/seed/Q7v3K9-${Date.now()}/300`,
+    };
   }
 }
